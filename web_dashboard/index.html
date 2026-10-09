@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shallow Geothermal Monitoring System | Engr. Hanif Khan</title>
+  <!-- Google Fonts & Chart.js -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    :root {
+      --bg-dark: #0a0f1d;
+      --card-bg: rgba(18, 26, 47, 0.75);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --card-hover: rgba(255, 255, 255, 0.12);
+      --accent-cyan: #06b6d4;
+      --accent-blue: #3b82f6;
+      --accent-emerald: #10b981;
+      --accent-amber: #f59e0b;
+      --accent-rose: #f43f5e;
+      --accent-indigo: #6366f1;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: radial-gradient(circle at top right, #111e38 0%, var(--bg-dark) 50%, #050811 100%);
+      color: var(--text-main);
+      min-height: 100vh;
+      padding: 24px;
+      line-height: 1.5;
+    }
+
+    /* Container */
+    .dashboard-container {
+      max-width: 1440px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* Header */
+    header {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 24px 32px;
+      backdrop-filter: blur(16px);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      box-shadow: 0 20px 40px -15px rgba(0,0,0,0.5);
+    }
+
+    .brand-section h1 {
+      font-size: 1.6rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 4px;
+    }
+
+    .brand-section p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .badge-tech {
+      background: rgba(99, 102, 241, 0.15);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      color: #a5b4fc;
+      padding: 2px 10px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .status-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      color: #34d399;
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background: #10b981;
+      border-radius: 50%;
+      box-shadow: 0 0 12px #10b981;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.9); }
+    }
+
+    .btn {
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text-main);
+      border: 1px solid var(--card-border);
+      padding: 8px 16px;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-1px);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
+      border: none;
+      box-shadow: 0 4px 15px rgba(37, 99, 235, 0.35);
+    }
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #0369a1 0%, #1d4ed8 100%);
+    }
+
+    /* Key Thermodynamic Formula Bar */
+    .formula-bar {
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 14px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.88rem;
+    }
+
+    .formula-highlight {
+      color: #38bdf8;
+      font-weight: 700;
+    }
+
+    .formula-kpi {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .kpi-unit {
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    /* KPI Cards Grid */
+    .grid-kpis {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      padding: 20px;
+      backdrop-filter: blur(16px);
+      transition: all 0.25s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card:hover {
+      border-color: var(--card-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 24px -10px rgba(0,0,0,0.4);
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: var(--accent-blue);
+      opacity: 0.8;
+    }
+
+    .card.accent-inlet::before { background: #06b6d4; }
+    .card.accent-outlet::before { background: #3b82f6; }
+    .card.accent-delta::before { background: #10b981; }
+    .card.accent-pipe::before { background: #8b5cf6; }
+    .card.accent-ground::before { background: #f59e0b; }
+    .card.accent-room::before { background: #ec4899; }
+    .card.accent-outdoor::before { background: #f43f5e; }
+
+    .card-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .card-pin {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      background: rgba(255, 255, 255, 0.06);
+      padding: 2px 6px;
+      border-radius: 6px;
+      color: var(--text-dim);
+    }
+
+    .card-val-row {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .card-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--text-main);
+      letter-spacing: -0.03em;
+    }
+
+    .card-unit {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .card-subtitle {
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      margin-top: 6px;
+    }
+
+    /* Section Split */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    @media (max-width: 1024px) {
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Interactive Schematic */
+    .schematic-card {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .section-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+
+    .schematic-box {
+      flex: 1;
+      background: rgba(10, 15, 29, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 14px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      min-height: 380px;
+    }
+
+    /* SVG Schematic */
+    svg.ground-schematic {
+      width: 100%;
+      height: 100%;
+      max-height: 360px;
+    }
+
+    /* Charts Section */
+    .chart-card {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .chart-container {
+      position: relative;
+      flex: 1;
+      min-height: 320px;
+      width: 100%;
+    }
+
+    /* Controls Bar */
+    .controls-panel {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      padding: 20px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .controls-group {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .param-label {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .param-input {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 6px 12px;
+      color: var(--text-main);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      width: 80px;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      font-size: 0.82rem;
+      color: var(--text-dim);
+      padding: 16px 0;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="dashboard-container">
+    
+    <!-- Top Header -->
+    <header>
+      <div class="brand-section">
+        <h1>Shallow Geothermal Monitoring System</h1>
+        <p>
+          <span class="badge-tech" style="background: rgba(6, 182, 212, 0.15); border-color: rgba(6, 182, 212, 0.3); color: #38bdf8;">IoT Telemetry Platform</span>
+          <span>Engineered by <strong>Engr. Hanif Khan</strong> &bull; Embedded Systems &amp; IoT Architecture</span>
+        </p>
+      </div>
+
+      <div class="header-controls">
+        <div class="status-pill" id="connectionPill">
+          <span class="status-dot"></span>
+          <span id="connectionText">Adafruit IO Connected</span>
+        </div>
+        <button class="btn" onclick="setApiKey()">🔑 Set API Key</button>
+        <button class="btn" onclick="toggleDemoMode()" id="demoBtn">🧪 Demo Mode</button>
+        <button class="btn btn-primary" onclick="exportCSV()">📥 Export CSV Data</button>
+        <a href="https://io.adafruit.com/geothermal/dashboards/geothermal-fyp" target="_blank" class="btn">🌐 Adafruit Dashboard</a>
+      </div>
+    </header>
+
+    <!-- Thermodynamics Formulation Bar -->
+    <div class="formula-bar">
+      <div>
+        <span>Thermodynamic Balance: </span>
+        <span class="formula-highlight">Q = ṁ &times; C<sub>p</sub> &times; (T<sub>inlet</sub> - T<sub>outlet</sub>)</span>
+      </div>
+      <div class="formula-kpi">
+        <div>
+          <span>Heat Dissipated: </span>
+          <span class="formula-highlight" id="heatRateVal">--</span>
+          <span class="kpi-unit">Watts</span>
+        </div>
+        <div>
+          <span>Thermal Effectiveness: </span>
+          <span class="formula-highlight" id="effectivenessVal">--</span>
+          <span class="kpi-unit">%</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Telemetry KPI Cards -->
+    <div class="grid-kpis">
+      
+      <!-- Inlet Temp -->
+      <div class="card accent-inlet">
+        <div class="card-label">
+          <span>Inlet Water (T<sub>in</sub>)</span>
+          <span class="card-pin">GPIO 18</span>
+        </div>
+        <div class="card-val-row">
+          <span class="card-value" id="valInlet">--</span>
+          <span class="card-unit">&deg;C</span>
+        </div>
+        <div class="card-subtitle">Fluid entering ground coil</div>
+      </div>
+
+      <!-- Outlet Temp -->
+      <div class="card accent-outlet">
+        <div class="card-label">
+          <span>Outlet Water (T<sub>out</sub>)</span>
+          <span class="card-pin">GPIO 19</span>
+        </div>
+        <div class="card-val-row">
+          <span class="card-value" id="valOutlet">--</span>
+          <span class="card-unit">&deg;C</span>
+        </div>
+        <div class="card-subtitle">Fluid leaving ground loop</div>
+      </div>
+
+      <!-- Delta T -->
+      <div class="card accent-delta">
+        <div class="card-label">
+          <span>Thermal Drop (&Delta;T)</span>
+          <span class="card-pin">CALC</span>
+        </div>
+        <div class="card-val-row">
+          <span class="card-value" id="valDelta">--</span>
+          <span class="card-unit">&deg;C</span>
+        </div>
+        <div class="card-subtitle">T<sub>inlet</sub> - T<sub>outlet</sub></div>
+      </div>
+
+      <!-- Deep Ground Temp -->
+      <div class="card accent-ground">
+        <div class="card-label">
+          <span>Deep Ground (2.5m)</span>
+          <span class="card-pin">GPIO 22</span>
+        </div>
+        <div class="card-val-row">
+          <span class="card-value" id="valGround">--</span>
+          <span class="card-unit">&deg;C</span>
+        </div>
+        <div class="card-subtitle">Undisturbed subsurface soil</div>
+      </div>
+
+      <!-- Pipe Wall Temp -->
+      <div class="card accent-pipe">
+        <div class="card-label">
+          <span>HDPE Pipe Wall</span>
+          <span class="card-pin">GPIO 21</span>
+        </div>
+        <div class="card-val-row">
+          <span class="card-value" id="valPipe">--</span>
+          <span class="card-unit">&deg;C</span>
+        </div>
+        <div class="card-subtitle">Pipe-soil boundary interface</div>
+      </div>
+
+      <!-- Room Temp -->
+      <div class="card accent-room">
+        <div class="card-label">
+          <span>Room Air</span>
+          <span class="card-pin">GPIO 4</span>
+        </div>
+        <div class="card-val-row">
+          <span class="card-value" id="valRoom">--</span>
+          <span class="card-unit">&deg;C</span>
+        </div>
+        <div class="card-subtitle">Conditioned interior space</div>
+      </div>
+
+      <!-- Outdoor Temp -->
+      <div class="card accent-outdoor">
+        <div class="card-label">
+          <span>Outdoor Ambient</span>
+          <span class="card-pin">GPIO 5</span>
+        </div>
+        <div class="card-val-row">
+          <span class="card-value" id="valOutdoor">--</span>
+          <span class="card-unit">&deg;C</span>
+        </div>
+        <div class="card-subtitle">External atmospheric temp</div>
+      </div>
+
+    </div>
+
+    <!-- Main Visuals Grid: Schematic & Live Chart -->
+    <div class="main-grid">
+      
+      <!-- Interactive Subsurface Slinky Coil Schematic -->
+      <div class="card schematic-card">
+        <div class="section-title">
+          <span>🔬 Cross-Sectional Subsurface Profile</span>
+        </div>
+        <div class="section-desc">Physical placement of the 6 DS18B20 digital sensors across the 2.5m trench</div>
+        
+        <div class="schematic-box">
+          <svg class="ground-schematic" viewBox="0 0 540 320" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#0e1726" />
+                <stop offset="100%" stop-color="#1e293b" />
+              </linearGradient>
+              <linearGradient id="groundGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#292524" />
+                <stop offset="100%" stop-color="#1c1917" />
+              </linearGradient>
+            </defs>
+
+            <!-- Sky / Ambient Zone -->
+            <rect x="10" y="10" width="520" height="90" rx="8" fill="url(#skyGrad)" stroke="#334155" stroke-width="1"/>
+            <text x="25" y="35" fill="#94a3b8" font-size="12" font-family="'Plus Jakarta Sans'">SURFACE / AMBIENT ZONE</text>
+            
+            <!-- Room & Outdoor Nodes -->
+            <rect x="35" y="45" width="130" height="42" rx="6" fill="#1e1b4b" stroke="#6366f1" stroke-width="1.5"/>
+            <text x="45" y="63" fill="#c7d2fe" font-size="11" font-weight="bold">Room Sensor [P4]</text>
+            <text x="45" y="78" fill="#38bdf8" font-size="12" font-weight="bold" id="svgRoom">-- °C</text>
+
+            <rect x="375" y="45" width="140" height="42" rx="6" fill="#450a0a" stroke="#ef4444" stroke-width="1.5"/>
+            <text x="385" y="63" fill="#fecaca" font-size="11" font-weight="bold">Outdoor Sensor [P5]</text>
+            <text x="385" y="78" fill="#f87171" font-size="12" font-weight="bold" id="svgOutdoor">-- °C</text>
+
+            <!-- Ground Line (Trench) -->
+            <line x1="10" y1="105" x2="530" y2="105" stroke="#78716c" stroke-width="2" stroke-dasharray="4 2"/>
+            <text x="235" y="100" fill="#a8a29e" font-size="10">GROUND LEVEL (0.0 m)</text>
+
+            <!-- Underground Trench Zone -->
+            <rect x="10" y="110" width="520" height="195" rx="8" fill="url(#groundGrad)" stroke="#44403c" stroke-width="1"/>
+            <text x="25" y="130" fill="#78716c" font-size="11">SUBSURFACE SOIL (2.5m TRENCH DEPTH)</text>
+
+            <!-- Slinky Coil Illustration -->
+            <g transform="translate(140, 160)">
+              <!-- Slinky Loops -->
+              <circle cx="50" cy="50" r="38" fill="none" stroke="#0284c7" stroke-width="4" stroke-dasharray="8 4"/>
+              <circle cx="100" cy="50" r="38" fill="none" stroke="#0284c7" stroke-width="4" stroke-dasharray="8 4"/>
+              <circle cx="150" cy="50" r="38" fill="none" stroke="#0284c7" stroke-width="4" stroke-dasharray="8 4"/>
+              <circle cx="200" cy="50" r="38" fill="none" stroke="#0284c7" stroke-width="4" stroke-dasharray="8 4"/>
+              
+              <!-- Flow Direction Arrows -->
+              <text x="100" y="55" fill="#38bdf8" font-size="11" font-family="'JetBrains Mono'">HDPE SLINKY COIL</text>
+            </g>
+
+            <!-- Sensor Badges in Ground -->
+            <!-- Inlet -->
+            <g transform="translate(30, 140)">
+              <rect width="105" height="38" rx="6" fill="#082f49" stroke="#0ea5e9" stroke-width="1.5"/>
+              <text x="8" y="16" fill="#bae6fd" font-size="10">Inlet Water [P18]</text>
+              <text x="8" y="30" fill="#38bdf8" font-size="11" font-weight="bold" id="svgInlet">-- °C</text>
+            </g>
+
+            <!-- Outlet -->
+            <g transform="translate(400, 140)">
+              <rect width="105" height="38" rx="6" fill="#172554" stroke="#3b82f6" stroke-width="1.5"/>
+              <text x="8" y="16" fill="#bfdbfe" font-size="10">Outlet Water [P19]</text>
+              <text x="8" y="30" fill="#60a5fa" font-size="11" font-weight="bold" id="svgOutlet">-- °C</text>
+            </g>
+
+            <!-- Pipe Wall -->
+            <g transform="translate(200, 260)">
+              <rect width="120" height="38" rx="6" fill="#2e1065" stroke="#8b5cf6" stroke-width="1.5"/>
+              <text x="8" y="16" fill="#ddd6fe" font-size="10">Pipe Wall [P21]</text>
+              <text x="8" y="30" fill="#a78bfa" font-size="11" font-weight="bold" id="svgPipe">-- °C</text>
+            </g>
+
+            <!-- Deep Ground -->
+            <g transform="translate(360, 260)">
+              <rect width="145" height="38" rx="6" fill="#451a03" stroke="#f59e0b" stroke-width="1.5"/>
+              <text x="8" y="16" fill="#fde68a" font-size="10">Deep Soil 2.5m [P22]</text>
+              <text x="8" y="30" fill="#fbbf24" font-size="11" font-weight="bold" id="svgGround">-- °C</text>
+            </g>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Real-Time Thermal Trends Chart -->
+      <div class="card chart-card">
+        <div class="section-title">
+          <span>📈 Real-Time Multi-Channel Thermal Trends</span>
+        </div>
+        <div class="section-desc">Live streaming readings across all 6 monitoring channels</div>
+        
+        <div class="chart-container">
+          <canvas id="telemetryChart"></canvas>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Parameters & System Info -->
+    <div class="controls-panel">
+      <div class="controls-group">
+        <span class="param-label">Fluid Flow Rate (ṁ):</span>
+        <input type="number" id="flowRateInput" class="param-input" value="0.08" step="0.01" min="0.01">
+        <span class="param-label">kg/s (~5 L/min)</span>
+
+        <span class="param-label" style="margin-left: 16px;">Specific Heat (C<sub>p</sub>):</span>
+        <input type="number" id="cpInput" class="param-input" value="4184" step="10">
+        <span class="param-label">J/(kg&middot;&deg;C)</span>
+      </div>
+
+      <div style="font-size: 0.85rem; color: var(--text-dim);">
+        Polling rate: <strong>15 sec</strong> &bull; Free Plan Limit: <strong>30 pts/min safe</strong>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      <div style="background: rgba(18, 26, 47, 0.85); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 16px; padding: 20px 24px; margin-bottom: 16px; text-align: left; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+        <div>
+          <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #38bdf8; font-weight: 700; margin-bottom: 4px;">System Engineering &amp; IoT Telemetry Architecture</div>
+          <div style="font-size: 1.15rem; font-weight: 800; color: #f8fafc;">Engr. Hanif Khan</div>
+          <div style="font-size: 0.82rem; color: #94a3b8;">Lead Embedded Systems, Firmware &amp; Telemetry Engineer</div>
+        </div>
+        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+          <a href="mailto:Hanifullahshams@gmail.com" class="btn" style="padding: 6px 14px; font-size: 0.8rem;">✉️ Hanifullahshams@gmail.com</a>
+          <a href="https://www.linkedin.com/in/engr-hanif-khan-628a04259/" target="_blank" class="btn" style="padding: 6px 14px; font-size: 0.8rem;">💼 LinkedIn</a>
+          <a href="https://github.com/Engrhanifkhan" target="_blank" class="btn" style="padding: 6px 14px; font-size: 0.8rem;">🐙 GitHub</a>
+          <a href="https://wa.me/923118221686" target="_blank" class="btn btn-primary" style="padding: 6px 14px; font-size: 0.8rem;">💬 WhatsApp (+92 311 8221686)</a>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 6px; font-weight: 600; color: #94a3b8;">
+        Design &amp; Development of a Low-Cost Modular Shallow Geothermal Heat Exchanger (HGHE)
+      </div>
+      <div style="font-size: 0.8rem; color: #64748b; margin-bottom: 4px;">
+        High-Precision Multi-Channel Subsurface Slinky Coil Thermal Monitoring &bull; ESP32 &amp; Adafruit IO
+      </div>
+      <div style="font-size: 0.8rem; color: #64748b;">
+        Engineered &amp; Maintained by <strong>Engr. Hanif Khan</strong> &bull; All Rights Reserved
+      </div>
+    </footer>
+
+  </div>
+
+  <script>
+    // Configuration: Loaded securely from browser localStorage
+    const AIO_USERNAME = localStorage.getItem("aio_username") || "geothermal";
+    let AIO_KEY = localStorage.getItem("aio_key") || "";
+
+    function setApiKey() {
+      const input = prompt("Enter your Adafruit IO Active Key (AIO Key):", AIO_KEY);
+      if (input !== null) {
+        AIO_KEY = input.trim();
+        localStorage.setItem("aio_key", AIO_KEY);
+        pollLiveTelemetry();
+      }
+    }
+
+    const FEEDS = {
+      inlet: "inlet-temp",
+      outlet: "outlet-temp",
+      delta: "delta-t",
+      ground: "ground-temp",
+      pipe: "pipe-wall-temp",
+      room: "room-temp",
+      outdoor: "outdoor-temp"
+    };
+
+    let demoMode = false;
+    let telemetryHistory = [];
+
+    // Chart.js Setup
+    const ctx = document.getElementById('telemetryChart').getContext('2d');
+    const chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: [],
+        datasets: [
+          { label: 'Inlet (Tin)', borderColor: '#06b6d4', backgroundColor: 'transparent', data: [], tension: 0.3, borderWidth: 2 },
+          { label: 'Outlet (Tout)', borderColor: '#3b82f6', backgroundColor: 'transparent', data: [], tension: 0.3, borderWidth: 2 },
+          { label: 'Ground (2.5m)', borderColor: '#f59e0b', backgroundColor: 'transparent', data: [], tension: 0.3, borderWidth: 2 },
+          { label: 'Pipe Wall', borderColor: '#8b5cf6', backgroundColor: 'transparent', data: [], tension: 0.3, borderWidth: 2 },
+          { label: 'Room Air', borderColor: '#ec4899', backgroundColor: 'transparent', data: [], tension: 0.3, borderWidth: 2 },
+          { label: 'Outdoor', borderColor: '#f43f5e', backgroundColor: 'transparent', data: [], tension: 0.3, borderWidth: 2 },
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { labels: { color: '#94a3b8', font: { family: 'Plus Jakarta Sans', size: 11 } } }
+        },
+        scales: {
+          x: {
+            grid: { color: 'rgba(255,255,255,0.04)' },
+            ticks: { color: '#64748b', font: { family: 'JetBrains Mono', size: 10 } }
+          },
+          y: {
+            grid: { color: 'rgba(255,255,255,0.06)' },
+            ticks: { color: '#64748b', font: { family: 'JetBrains Mono', size: 10 } },
+            title: { display: true, text: 'Temperature (°C)', color: '#94a3b8' }
+          }
+        }
+      }
+    });
+
+    // Update UI Elements
+    function updateValues(data) {
+      const { inlet, outlet, ground, pipe, room, outdoor } = data;
+      
+      const deltaT = (inlet !== null && outlet !== null) ? (inlet - outlet) : null;
+
+      document.getElementById('valInlet').innerText = inlet !== null ? inlet.toFixed(1) : '--';
+      document.getElementById('valOutlet').innerText = outlet !== null ? outlet.toFixed(1) : '--';
+      document.getElementById('valDelta').innerText = deltaT !== null ? deltaT.toFixed(2) : '--';
+      document.getElementById('valGround').innerText = ground !== null ? ground.toFixed(1) : '--';
+      document.getElementById('valPipe').innerText = pipe !== null ? pipe.toFixed(1) : '--';
+      document.getElementById('valRoom').innerText = room !== null ? room.toFixed(1) : '--';
+      document.getElementById('valOutdoor').innerText = outdoor !== null ? outdoor.toFixed(1) : '--';
+
+      // SVG Badges
+      document.getElementById('svgInlet').innerText = (inlet !== null ? inlet.toFixed(1) : '--') + ' °C';
+      document.getElementById('svgOutlet').innerText = (outlet !== null ? outlet.toFixed(1) : '--') + ' °C';
+      document.getElementById('svgGround').innerText = (ground !== null ? ground.toFixed(1) : '--') + ' °C';
+      document.getElementById('svgPipe').innerText = (pipe !== null ? pipe.toFixed(1) : '--') + ' °C';
+      document.getElementById('svgRoom').innerText = (room !== null ? room.toFixed(1) : '--') + ' °C';
+      document.getElementById('svgOutdoor').innerText = (outdoor !== null ? outdoor.toFixed(1) : '--') + ' °C';
+
+      // Thermodynamic calculations
+      const mDot = parseFloat(document.getElementById('flowRateInput').value) || 0.08;
+      const cp = parseFloat(document.getElementById('cpInput').value) || 4184;
+
+      if (deltaT !== null) {
+        const Q = mDot * cp * deltaT; // Watts
+        document.getElementById('heatRateVal').innerText = Math.round(Q);
+        
+        if (inlet !== ground && ground !== null) {
+          const eff = Math.min(100, Math.max(0, ((inlet - outlet) / (inlet - ground)) * 100));
+          document.getElementById('effectivenessVal').innerText = eff.toFixed(1);
+        }
+      }
+
+      // Record for chart & CSV
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+      telemetryHistory.push({
+        timestamp: now.toISOString(),
+        timeStr,
+        inlet,
+        outlet,
+        deltaT,
+        ground,
+        pipe,
+        room,
+        outdoor
+      });
+
+      if (chart.data.labels.length > 20) {
+        chart.data.labels.shift();
+        chart.data.datasets.forEach(ds => ds.data.shift());
+      }
+
+      chart.data.labels.push(timeStr);
+      chart.data.datasets[0].data.push(inlet);
+      chart.data.datasets[1].data.push(outlet);
+      chart.data.datasets[2].data.push(ground);
+      chart.data.datasets[3].data.push(pipe);
+      chart.data.datasets[4].data.push(room);
+      chart.data.datasets[5].data.push(outdoor);
+      chart.update();
+    }
+
+    // Fetch Last Value from Adafruit IO REST API
+    async function fetchAdafruitFeed(feedKey) {
+      const url = `https://io.adafruit.com/api/v2/${AIO_USERNAME}/feeds/${feedKey}/data/last`;
+      try {
+        const resp = await fetch(url, {
+          headers: { 'X-AIO-Key': AIO_KEY }
+        });
+        if (!resp.ok) return null;
+        const json = await resp.json();
+        return parseFloat(json.value);
+      } catch (e) {
+        return null;
+      }
+    }
+
+    async function pollLiveTelemetry() {
+      if (demoMode) return;
+      if (!AIO_KEY) {
+        document.getElementById('connectionPill').style.borderColor = 'rgba(245, 158, 11, 0.35)';
+        document.getElementById('connectionText').innerText = 'Click 🔑 to Set Key';
+        return;
+      }
+
+      try {
+        const [inlet, outlet, ground, pipe, room, outdoor] = await Promise.all([
+          fetchAdafruitFeed(FEEDS.inlet),
+          fetchAdafruitFeed(FEEDS.outlet),
+          fetchAdafruitFeed(FEEDS.ground),
+          fetchAdafruitFeed(FEEDS.pipe),
+          fetchAdafruitFeed(FEEDS.room),
+          fetchAdafruitFeed(FEEDS.outdoor)
+        ]);
+
+        document.getElementById('connectionPill').style.borderColor = 'rgba(16, 185, 129, 0.25)';
+        document.getElementById('connectionText').innerText = 'Adafruit IO Live';
+
+        updateValues({ inlet, outlet, ground, pipe, room, outdoor });
+      } catch (err) {
+        document.getElementById('connectionPill').style.borderColor = 'rgba(239, 68, 68, 0.25)';
+        document.getElementById('connectionText').innerText = 'Polling Error';
+      }
+    }
+
+    // Demo Mode for Rehearsal & Testing
+    function toggleDemoMode() {
+      demoMode = !demoMode;
+      const btn = document.getElementById('demoBtn');
+      if (demoMode) {
+        btn.innerText = '⏹ Exit Demo';
+        btn.style.background = 'rgba(245, 158, 11, 0.2)';
+        document.getElementById('connectionText').innerText = 'Simulation Mode';
+        runDemoTick();
+      } else {
+        btn.innerText = '🧪 Demo Mode';
+        btn.style.background = '';
+        pollLiveTelemetry();
+      }
+    }
+
+    function runDemoTick() {
+      if (!demoMode) return;
+      const baseGround = 21.4 + (Math.random() * 0.2 - 0.1);
+      const inlet = 28.6 + (Math.random() * 0.4 - 0.2);
+      const outlet = 23.8 + (Math.random() * 0.3 - 0.15);
+      const pipe = 22.9 + (Math.random() * 0.2 - 0.1);
+      const room = 24.5 + (Math.random() * 0.3 - 0.15);
+      const outdoor = 34.2 + (Math.random() * 0.5 - 0.25);
+
+      updateValues({ inlet, outlet, ground: baseGround, pipe, room, outdoor });
+      setTimeout(runDemoTick, 3000);
+    }
+
+    // CSV Data Export for FYP Thesis Analysis
+    function exportCSV() {
+      if (telemetryHistory.length === 0) {
+        alert("No telemetry data points collected yet.");
+        return;
+      }
+
+      let csv = "Timestamp,Time,Inlet_C,Outlet_C,DeltaT_C,Ground_2.5m_C,PipeWall_C,RoomAir_C,Outdoor_C\n";
+      telemetryHistory.forEach(r => {
+        csv += `${r.timestamp},${r.timeStr},${r.inlet ?? ''},${r.outlet ?? ''},${r.deltaT ?? ''},${r.ground ?? ''},${r.pipe ?? ''},${r.room ?? ''},${r.outdoor ?? ''}\n`;
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.setAttribute("download", `Geothermal_Telemetry_${new Date().toISOString().slice(0,10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    // Initial startup
+    pollLiveTelemetry();
+    setInterval(pollLiveTelemetry, 15000); // Poll every 15s
+  </script>
+</body>
+</html>

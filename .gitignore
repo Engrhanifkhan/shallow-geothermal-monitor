@@ -1,0 +1,6 @@
+firmware/GeothermalMonitor/Secrets.h
+_pptx_extract/
+.pio/
+.vscode/
+*.elf
+*.bin
